@@ -1,4 +1,12 @@
+# Author ~ Markela Zeneli
+# Goldsmiths, University of London
+########################################
+
 import pandas as pd
+import os
+import fnmatch
+import datetime
+import math
 
 race = []
 gender = []
@@ -7,7 +15,7 @@ age = []
 count1 = 0
 count2 = 0
 
-#add CSV columns to respective lists
+#Add CSV columns to respective lists
 def all(path):
     global race
     global gender
@@ -21,25 +29,49 @@ def all(path):
     outcome += df['Outcome'].tolist()
     age += df['Age range'].tolist()
 
-all('data/2020-03/2020-03-city-of-london-stop-and-search.csv')
+#Iterate over time range of CSVs
+month1=12
+year1=2017
+month2=11
+year2=2020
 
-all('data/2020-03/2020-03-city-of-london-stop-and-search.csv')
+def getDates(month1, year1, month2, year2):
 
-all('data/2020-04/2020-04-metropolitan-stop-and-search.csv')
+    #Start date
+    d = datetime.date(year1,month1,15)
 
-all('data/2020-04/2020-04-city-of-london-stop-and-search.csv')
+    #Size of each step
+    month_delta = datetime.timedelta(days=30)
 
-all('data/2020-05/2020-05-metropolitan-stop-and-search.csv')
+    #End date
+    end_date = datetime.date(year2,month2,15)
+    print(end_date)
 
-all('data/2020-05/2020-05-city-of-london-stop-and-search.csv')
+    #Calculates difference in dates (by metric of .days), and turns into months by dividing by 30 and rounding up
+    for i in range(math.ceil(((end_date - d).days)/30)):
+        #File paths for months with 1 digit (adds a 0 in front to keep in line with format of file path)
+        if (d + i*month_delta).month < 10:
+            all('data/'+str((d + i*month_delta).year)+'-0'+str((d + i*month_delta).month)+'/'+str((d + i*month_delta).year)+'-0'+str((d + i*month_delta).month)+'-city-of-london-stop-and-search.csv')
+            all('data/'+str((d + i*month_delta).year)+'-0'+str((d + i*month_delta).month)+'/'+str((d + i*month_delta).year)+'-0'+str((d + i*month_delta).month)+'-metropolitan-stop-and-search.csv')
+        #File paths for later months(10+)
+        else:
+            all('data/'+str((d + i*month_delta).year)+'-'+str((d + i*month_delta).month)+'/'+str((d + i*month_delta).year)+'-'+str((d + i*month_delta).month)+'-city-of-london-stop-and-search.csv')
+            all('data/'+str((d + i*month_delta).year)+'-'+str((d + i*month_delta).month)+'/'+str((d + i*month_delta).year)+'-'+str((d + i*month_delta).month)+'-metropolitan-stop-and-search.csv')
 
+#Call getDates and populate lists
+getDates(month1, year1, month2, year2)
+
+#Stats
 for i in range(len(race)):
-    if race[i] == "Black" and gender[i] == "Male" and (age[i] == "10-17" or age[i] == "18-24"):
+    if race[i] == "White" and gender[i] == "Male" and (age[i] == "10-17" or age[i] == "18-24"):
         count1+=1
-        if outcome[i] == "A no further action disposal" :
+        if outcome[i] == "A no further action disposal"  :
             count2+=1
+#"""+geography=fixed for count2"""
 
 stat = count2/count1
 
 print(str(count1) + ',' + str(count2))
 print(stat)
+
+#Table of stats 
